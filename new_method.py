@@ -14,7 +14,8 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import time
 
-def generate_comparison_dists(n, Vw, Vl, null_margin=0, plot=False, print_data=False):
+def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
+                                plot=False, print_data=False):
     """
     Generates the first round probability distributions over number 
     of matches for both the null and alternative hypothesis of 
@@ -120,8 +121,8 @@ def generate_polling_dists(n, Vw, Vl, null_margin=0, plot=False):
 
     Returns: dict with
         dist_range : values of k to which the distributions correspond
-        alt_dist : probability distribution over winner votes under the alternative hypothesis
-        null_dist : probability distribution over winner votes under the null hypothesis
+        alt_dist : probability distribution over winner votes under alt
+        null_dist : probability distribution over winner votes under null
     """
     # relevant ballots
     N = Vw + Vl
@@ -147,7 +148,8 @@ def generate_polling_dists(n, Vw, Vl, null_margin=0, plot=False):
         'null_dist': null_dist
     }
 
-def generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, plot=False, print_data=True):
+def generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, \
+                        plot=False, print_data=True):
     """
     Generates the joint probability distribution for the first round
     of a 2-strata (comparison and polling) audit.
