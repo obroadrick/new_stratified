@@ -488,7 +488,7 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
         int : minimum first polling round size
     """
 
-    n2 = 14
+    n2 = 1
     while(1):
         # find kmax such that Pr[k >= kmax] = stop_prob
         kmax = math.floor(binom.ppf(stop_prob, n2, N_w2 / (N_w2 + N_l2)))
@@ -497,11 +497,14 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
         pvalue = maximize_joint_pvalue(n1, kmax, N_w1, N_l1, N_w2, N_l2, n1, n2)['pvalue']
 
         # print n2 and pvalue for viewing pleasure
-        print("n2:",n2,"pvalue:",pvalue)
+        #print("n2:",n2,"pvalue:",pvalue)
 
         # return n2 when pvalue for kmax meets stopping condition
         if (pvalue < alpha):
-            return n2
+            return {
+                "round_size": n2,
+                "pvalue": pvalue
+            }
 
         # increment round size
         n2 += 1

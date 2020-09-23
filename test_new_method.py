@@ -6,10 +6,12 @@ Oliver Broadrick 2020
 from new_method import maximize_joint_pvalue, find_minimum_round_size
 import time
 from scipy.stats import binom
+from round_sizes import find_sample_size_for_stopping_prob_efficiently, \
+                find_sample_size_for_stopping_prob_efficiently_r2bravo
 
 # set up a contest
 N_relevant = 100
-fractional_margin = .5
+fractional_margin = .2
 polling_proportion = .5
 N_w = round(N_relevant * (1 + fractional_margin) / 2)
 N_l = N_relevant - N_w
@@ -42,7 +44,7 @@ print(results)
 
 #"""
 ###############################################################################
-## COMPUTE MINIMUM ROUND SIZE
+## COMPUTE MINIMUM POLLING ROUND SIZE
 ###############################################################################
 # comparison stratum sample size
 n1 = 10
@@ -51,14 +53,25 @@ stop_prob = .9
 # risk limit
 alpha = .1
 
-# find minimum round size (tracking time)
+# Print beginning message
+print("Finding minimum polling round sizes that give .9 stopping probablility. . .")
+
+# Find minimum round size with new method
 start = time.time()
 results = find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha)
-print("time:",(time.time()-start)/60,"minutes")
-print(results)
+#print("time:",(time.time()-start)/60,"minutes")
+print("New method")
+print(results['round_size'])
+print(results['pvalue'])
+
+# Also get suite round sizes (with minerva)
+suite_minerva = find_sample_size_for_stopping_prob_efficiently(stop_prob, \
+        N_w1, N_l1, N_w2, N_l2, n1, alpha)
+print("\nSUITE with Minerva")
+print("round size:", suite_minerva['round_size'])
+print("pvalue:",suite_minerva['combined_pvalue'])
+
 #"""
-
-
 
 
 
