@@ -206,7 +206,7 @@ def find_sample_size_for_stopping_prob_efficiently(stopping_probability, N_w1, N
     if (right is None):
         right = N_2
 
-    #print("right: "+str(right))
+    print("right: "+str(right))
      
     while(1):
         n2 = math.ceil((left + right) / 2 )
