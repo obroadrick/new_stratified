@@ -34,3 +34,6 @@ sum(Pr[K_w = k_w, K_m = k_m | alternative])
 sum(Pr[K_w = k_w, K_m = k_m | null])
 ```
 Where each sum is from the observed sample to the end of the distribution (just the tail of the distribution). Now stop the audit when this ratio is greater than 1 over alpha and you will still be running a risk-limiting audit, but your required sample size will almost always be lower! Sick math indeed.
+
+Here is a terrible angle showing the 3-d plot of the joint probability distribution over winner votes in the polling stratum and matching votes in the comparison stratum.
+![bad angle joint dist 3d](imgs/bad_angle.png)
