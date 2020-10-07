@@ -89,7 +89,7 @@ def compute_dist_over_pvalues(N_w1, N_l1, N_w2, N_l2, n1, n2, alpha, underlying=
         
         pvalues.append(pvalue)
         lambdas.append(alloc_lambda)
-        print("for k="+str(k)+"   pval="+str(round(pvalue,4))+"   refined:"+str(refined))
+        #print("for k="+str(k)+"   pval="+str(round(pvalue,4))+"   refined:"+str(refined))
 
     return {
         "possible_winner_votes":possible_winner_votes,
@@ -206,7 +206,7 @@ def find_sample_size_for_stopping_prob_efficiently(stopping_probability, N_w1, N
     if (right is None):
         right = N_2
 
-    print("right: "+str(right))
+    #print("right: "+str(right))
      
     while(1):
         n2 = math.ceil((left + right) / 2 )
@@ -393,7 +393,7 @@ def find_sample_size_for_stopping_prob_efficiently_r2bravo(stopping_probability,
 
         pvalue = combination_results['max_pvalue']
         pvalue_comparison = combination_results['pvalue1']
-        print(pvalue_comparison)
+        #print(pvalue_comparison)
         pvalue_polling = combination_results['pvalue2']
         alloc_lambda = combination_results['allocation lambda']
 

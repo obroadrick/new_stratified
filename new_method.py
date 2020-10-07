@@ -67,7 +67,8 @@ def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
     if matches_null >= N:
         prior = np.concatenate([np.zeros(matches_null), np.array([1])])
     else:
-        prior = np.concatenate([np.zeros(matches_null), np.array([.5]), np.full(N - matches_null, .5 / (N - matches_null))])
+        prior = np.concatenate([np.zeros(matches_null), np.array([.5]), \
+            np.full(N - matches_null, .5 / (N - matches_null))])
 
     """
     # plot for viewing pleasure
@@ -508,7 +509,4 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
 
         # increment round size
         n2 += 1
-
-
-
 

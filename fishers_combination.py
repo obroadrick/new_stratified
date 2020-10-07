@@ -198,7 +198,8 @@ def maximize_fisher_combined_pvalue(N_w1, N_l1, N1, N_w2, N_l2, N2,
     # REMOVED BECAUSE I WANT ACCURATE PVALUES EVEN WHEN GREATER THAN RISK LIMIT
     # If p-value is over the risk limit, then there's no need to refine the
     # maximization. We have a lower bound on the maximum.
-    if pvalue > alpha or modulus is None:
+    """
+    if modulus is None:
         return {'max_pvalue' : pvalue,
                 'pvalue1' : pvalue1,
                 'pvalue2' : pvalue2,
@@ -208,7 +209,6 @@ def maximize_fisher_combined_pvalue(N_w1, N_l1, N1, N_w2, N_l2, N2,
                 'stepsize' : stepsize,
                 'refined' : False
                 }
-    """
     
     # Use modulus of continuity for the Fisher combination function to check
     # how close this is to the true max
