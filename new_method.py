@@ -220,7 +220,7 @@ def compute_pvalue_from_joint_dist(k_c, k_p, alt_joint, null_joint):
 
     # pvalue is ratio of the 'corners'
     return null_corner / alt_corner
-
+    
 def compute_pvalue(k_c, k_p, alt_c, alt_p, null_c, null_p):
     """
     Compute the pvalue for the passed sample and distributions.
@@ -368,7 +368,8 @@ def compute_winner_vote_bounds(N_w1, N_l1, N_w2, N_l2, k_p=0):
         'x1_u' : x1_u
     }
 
-def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=None, upper_bound=None, plot=False, print_data=False):
+def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
+        lower_bound=None, upper_bound=None, plot=False, print_data=False):
     """
     Maximizes the joint pvalue for the given sample by searching
     over all possible allocations of winner votes under the null
@@ -398,6 +399,7 @@ def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=
         upper_bound = bounds['x1_u']
 
     # define a step size and generate lists for testing
+    # each test x is a number of winner votes in the comparison stratum
     divisions = 10 # could tweak this for effiency
     step_size = math.ceil((upper_bound - lower_bound) / divisions)
     test_xs = np.arange(lower_bound, upper_bound, step_size)
@@ -460,11 +462,11 @@ def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=
         }
     else:
         # set bounds for refined search
-        lower_bound = max_x - step_size
-        upper_bound = max_x + step_size
+        lower = max_x - step_size
+        upper = max_x + step_size
 
         # perform refined search
-        refined = maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound, upper_bound)
+        refined = maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=lower, upper_bound=upper)
 
         # increase iterations by 1 and return results
         refined['search_iterations'] += 1
@@ -495,7 +497,8 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
         kmax = math.floor(binom.ppf(stop_prob, n2, N_w2 / (N_w2 + N_l2)))
 
         # get pvalue for kmax
-        pvalue = maximize_joint_pvalue(n1, kmax, N_w1, N_l1, N_w2, N_l2, n1, n2)['pvalue']
+        pvalue = maximize_joint_pvalue(n1, kmax, N_w1, N_l1, N_w2, N_l2, n1, n2, plot=False)['pvalue']
+        #print(pvalue)
 
         # print n2 and pvalue for viewing pleasure
         #print("n2:",n2,"pvalue:",pvalue)
@@ -509,4 +512,3 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
 
         # increment round size
         n2 += 1
-
