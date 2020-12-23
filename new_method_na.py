@@ -1,8 +1,8 @@
 """
-Functions for a new method of stratified audit with 2 strata (ballot
-comparison and ballot polling) that finds a sharper p-value by 
-analytically finding the overall pvalue, rather than combining
-independent p-values.
+new_method_na.py ==> 'na' means 'not athenized'
+Same as new_method.py except pvalues are computed
+as ratios of just the points rather than the corners
+of the distributions.
 
 Oliver Broadrick 2020
 """
@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 from matplotlib import cm
 import time
 
-def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
+def generate_comparison_dists_na(n, Vw, Vl, null_margin=0, \
                                 plot=False, print_data=False):
     """
     Generates the first round probability distributions over number 
@@ -106,7 +106,7 @@ def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
         'null_dist': null_dist
     }
  
-def generate_polling_dists(n, Vw, Vl, null_margin=0, plot=False):
+def generate_polling_dists_na(n, Vw, Vl, null_margin=0, plot=False):
     """
     Generates first round distributions over winner votes for 
     ballot polling audit.
@@ -149,7 +149,7 @@ def generate_polling_dists(n, Vw, Vl, null_margin=0, plot=False):
         'null_dist': null_dist
     }
 
-def generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, \
+def generate_joint_dist_na(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, \
                         plot=False, print_data=True):
     """
     Generates the joint probability distribution for the first round
@@ -172,13 +172,13 @@ def generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, \
     """
 
     # generate comparison dists
-    comparison_dists = generate_comparison_dists(n1, N_w1, N_l1, null_margin1, print_data=True)
+    comparison_dists = generate_comparison_dists_na(n1, N_w1, N_l1, null_margin1, print_data=True)
     dist_range_comparison = comparison_dists['dist_range']
     alt_dist_comparison = comparison_dists['alt_dist']
     null_dist_comparison = comparison_dists['null_dist']
 
     # generate polling dists
-    polling_dists = generate_polling_dists(n2, N_w2, N_l2, -1 * null_margin1)
+    polling_dists = generate_polling_dists_na(n2, N_w2, N_l2, -1 * null_margin1)
     dist_range_polling = polling_dists['dist_range']
     alt_dist_polling = polling_dists['alt_dist']
     null_dist_polling = polling_dists['null_dist']
@@ -196,7 +196,7 @@ def generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1=0, \
         'null_joint': null_joint
     }
 
-def compute_pvalue_from_joint_dist(k_c, k_p, alt_joint, null_joint):
+def compute_pvalue_na_from_joint_dist_na(k_c, k_p, alt_joint, null_joint):
     """
     Compute the pvalue for the passed joint distribution.
 
@@ -210,18 +210,10 @@ def compute_pvalue_from_joint_dist(k_c, k_p, alt_joint, null_joint):
     Returns:
         float: pvalue (ratio of corners)
     """
-    # sum the 'corners' of the joint dists
-    alt_corner = 0
-    for k in range(k_c, len(alt_joint)):
-        alt_corner += alt_joint[k][k_p:].sum()
-    null_corner = 0
-    for k in range(k_c, len(null_joint)):
-        null_corner += null_joint[k][k_p:].sum()
-
-    # pvalue is ratio of the 'corners'
-    return null_corner / alt_corner
+    # pvalue is ratio of the points
+    return null_joint[k_c][k_p] / alt_joint[k_c][k_p]
     
-def compute_pvalue(k_c, k_p, alt_c, alt_p, null_c, null_p):
+def compute_pvalue_na(k_c, k_p, alt_c, alt_p, null_c, null_p):
     """
     Compute the pvalue for the passed sample and distributions.
     Directly calculate each joint probability from the 
@@ -238,17 +230,7 @@ def compute_pvalue(k_c, k_p, alt_c, alt_p, null_c, null_p):
     Returns:
         float: pvalue (ratio of corners)
     """
-    alt_corner = 0
-    null_corner = 0
-
-    # compute sum of the 'corner' of the joint dist
-    for i in range(k_c, len(alt_c)):
-        for j in range (k_p, len(alt_p)):
-            alt_corner += alt_c[i] * alt_p[j]
-            null_corner += null_c[i] * null_p[j]
-
-    # pvalue is ratio of the 'corners'
-    return null_corner / alt_corner
+    return (null_c[k_c]*null_p[k_p]) / (alt_c[k_c]*alt_p[k_p])
 
 def find_kmin_pairs(alpha, alt_joint, null_joint):
     """
@@ -271,7 +253,7 @@ def find_kmin_pairs(alpha, alt_joint, null_joint):
         for k_p in range(len(alt_joint[0])):
 
             # test if this pair of k's meet the stopping condition
-            pvalue = compute_pvalue_from_joint_dist(k_c, k_p, alt_joint, null_joint)
+            pvalue = compute_pvalue_na_from_joint_dist_na(k_c, k_p, alt_joint, null_joint)
 
             if not math.isnan(pvalue) and pvalue <= alpha:
                 # add these k mins to the lists
@@ -368,7 +350,7 @@ def compute_winner_vote_bounds(N_w1, N_l1, N_w2, N_l2, k_p=0):
         'x1_u' : x1_u
     }
 
-def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
+def maximize_joint_pvalue_na(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
         lower_bound=None, upper_bound=None, plot=False, print_data=False):
     """
     Maximizes the joint pvalue for the given sample by searching
@@ -412,22 +394,22 @@ def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
 
         """
         # generate joint distributions
-        dists = generate_joint_dist(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1)
+        dists = generate_joint_dist_na(N_w1, N_l1, N_w2, N_l2, n1, n2, null_margin1)
         alt_joint = dists['alt_joint']
         null_joint = dists['null_joint']
         """
         # generate comparison dists
-        comparison_dists = generate_comparison_dists(n1, N_w1, N_l1, null_margin1, print_data=True)
+        comparison_dists = generate_comparison_dists_na(n1, N_w1, N_l1, null_margin1, print_data=True)
         alt_c = comparison_dists['alt_dist']
         null_c = comparison_dists['null_dist']
 
         # generate polling dists
-        polling_dists = generate_polling_dists(n2, N_w2, N_l2, -1 * null_margin1)
+        polling_dists = generate_polling_dists_na(n2, N_w2, N_l2, -1 * null_margin1)
         alt_p = polling_dists['alt_dist']
         null_p = polling_dists['null_dist']
 
         # compute pvalue
-        pvalue = compute_pvalue(k_c, k_p, alt_c, alt_p, null_c, null_p)
+        pvalue = compute_pvalue_na(k_c, k_p, alt_c, alt_p, null_c, null_p)
         pvalues[i] = pvalue
         
         # if pvalue greater than 1, just return 1
@@ -466,13 +448,13 @@ def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
         upper = max_x + step_size
 
         # perform refined search
-        refined = maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=lower, upper_bound=upper)
+        refined = maximize_joint_pvalue_na(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, lower_bound=lower, upper_bound=upper)
 
         # increase iterations by 1 and return results
         refined['search_iterations'] += 1
         return refined
 
-def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
+def find_minimum_round_size_na(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
     """
     Finds the minimum polling first round size that achieves the 
     desired probability of stopping, stop_prob, assuming no errors
@@ -497,11 +479,11 @@ def find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha):
         kmax = math.floor(binom.ppf(1 - stop_prob, n2, N_w2 / (N_w2 + N_l2)))
 
         # get pvalue for kmax
-        pvalue = maximize_joint_pvalue(n1, kmax, N_w1, N_l1, N_w2, N_l2, n1, n2, plot=False)['pvalue']
+        pvalue = maximize_joint_pvalue_na(n1, kmax, N_w1, N_l1, N_w2, N_l2, n1, n2, plot=False)['pvalue']
         #print(pvalue)
 
         # print n2 and pvalue for viewing pleasure
-        #print("n2:",n2,"pvalue:",pvalue,"kmax:",kmax)
+        #print("n2:",n2,"pvalue:",pvalue)
 
         # return n2 when pvalue for kmax meets stopping condition
         if (pvalue < alpha):

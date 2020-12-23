@@ -10,9 +10,9 @@ from round_sizes import find_sample_size_for_stopping_prob_efficiently, \
                 find_sample_size_for_stopping_prob_efficiently_r2bravo
 
 # set up a contest
-N_relevant = 200
+N_relevant = 500
 fractional_margin = .3
-polling_proportion = .5
+polling_proportion = .6
 N_w = round(N_relevant * (1 + fractional_margin) / 2)
 N_l = N_relevant - N_w
 N_w_fraction = N_w / N_relevant

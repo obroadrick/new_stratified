@@ -4,14 +4,15 @@ Script to test the new stratified method.
 Oliver Broadrick 2020
 """
 from new_method import maximize_joint_pvalue, find_minimum_round_size
+from new_method_na import maximize_joint_pvalue_na, find_minimum_round_size_na
 import time
 from scipy.stats import binom
 from round_sizes import find_sample_size_for_stopping_prob_efficiently, \
                 find_sample_size_for_stopping_prob_efficiently_r2bravo
 
 # set up a contest
-N_relevant = 1000
-fractional_margin = .1
+N_relevant = 400
+fractional_margin = .3
 polling_proportion = .8
 N_w = round(N_relevant * (1 + fractional_margin) / 2)
 N_l = N_relevant - N_w
@@ -71,7 +72,14 @@ results = find_minimum_round_size(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha)
 #print("time:",(time.time()-start)/60,"minutes")
 print("New method")
 print(results['round_size'], "minimum round size")
-print(results['pvalue'], "pvalue for kmax")
+print(results['pvalue'], "pvalue for kmax", results['kmax'])
+
+results_na = find_minimum_round_size_na(N_w1, N_l1, N_w2, N_l2, n1, stop_prob, alpha)
+#print("time:",(time.time()-start)/60,"minutes")
+print("\nNew method not athenized")
+print(results_na['round_size'], "minimum round size")
+print(results_na['pvalue'], "pvalue for kmax", results['kmax'])
+
 
 # Minerva SUITE
 suite_minerva = find_sample_size_for_stopping_prob_efficiently(stop_prob, \
