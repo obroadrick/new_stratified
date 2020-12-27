@@ -37,3 +37,10 @@ Where each sum is from the observed sample to the end of the distribution (just 
 
 Here is a terrible angle showing the 3-d plot of the joint probability distribution over winner votes in the polling stratum and matching votes in the comparison stratum.
 ![bad angle joint dist 3d](imgs/bad_angle.png)
+
+## Some preliminary results
+Here is a plot of first round sizes that achieve a 90% stopping probability
+for a stratified audit with two strata: ballot polling, ballot level comparison.
+I include both the round sizes achieved by this new method and those
+of SUITE with R2 Bravo.
+![round sizes](imgs/round_sizes.png)

@@ -1,5 +1,6 @@
 """
-The functions in this file are used to find the minimum round sizes that
+The functions in this file are used to find the minimum round sizes 
+for SUITE audits using Minerva and/or R2 Bravo for the polling stratum that
 produce a desired probability of stopping. Contest-wide Minerva and R2 Bravo 
 audits as well as 2-strata audits with either Minerva or R2 Bravo are 
 included. 
@@ -314,7 +315,8 @@ def find_sample_size_for_stopping_prob_r2bravo(stopping_probability, N_w, N_l, a
     N = N_w + N_l 
 
     left = 1
-    right = N
+    if right is None:
+        right = N
      
     while(1):
         n = math.ceil((left + right) / 2)

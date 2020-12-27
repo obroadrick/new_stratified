@@ -29,10 +29,10 @@ print("\nConsider auditing a contest with", N_relevant, "relevant ballots,")
 print("a risk limit of", alpha)
 print("and a comparison sample of", n1, "matches.")
 print()
-print("Now we find the first round minimum sample sizes for the polling stratumthat give .9 stopping probablility. . .")
+print("Now we find the first round minimum sample sizes for the polling stratum that give .9 stopping probablility. . .")
 
 
-for fractional_margin in np.linspace(.05, .8, 16):
+for fractional_margin in np.linspace(.02, .2, 19):
     polling_proportion = .5
     N_w = round(N_relevant * (1 + fractional_margin) / 2)
     N_l = N_relevant - N_w
@@ -57,7 +57,7 @@ for fractional_margin in np.linspace(.05, .8, 16):
 
     # SUITE with R2 Bravo
     suite_r2bravo = find_sample_size_for_stopping_prob_efficiently_r2bravo(stop_prob, \
-            N_w1, N_l1, N_w2, N_l2, n1, alpha, right = 1000)
+            N_w1, N_l1, N_w2, N_l2, n1, alpha, right = 15000)
     print("\nSUITE with R2 Bravo")
     print(suite_r2bravo['round_size'], "minimum round size")
     print(suite_r2bravo['combined_pvalue'], "pvalue for kmax")
@@ -75,8 +75,9 @@ for fractional_margin in np.linspace(.05, .8, 16):
         'N_l1':N_l1,
         'N_w2':N_w2,
         'N_l2':N_l2,
-        'round_size_suite_r2_bravo': suite_r2bravo['round_size'],
-        'pvalue_suite_r2_bravo': suite_r2bravo['combined_pvalue'],
+        'comparisons':n1,
+        'round_size_suite_r2bravo': suite_r2bravo['round_size'],
+        'pvalue_suite_r2bravo': suite_r2bravo['combined_pvalue'],
         'round_size_new_method': results['round_size'],
         'pvalue_new_method': results['pvalue'],
         'kmax_new_method': results['kmax']
