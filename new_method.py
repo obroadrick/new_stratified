@@ -53,22 +53,15 @@ def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
     matches_null = N - mismatches_null
     #print("matches_null:", matches_null)
 
-    # if print_data is true, print xnull and bnull
-    if print_data is True:
-        # get winner votes under null from null margin
-        x1 = (N + null_margin) / 2
-        # if in between rougly 270 - 80
-        if x1 > 272 and x1 < 283:
-            print("x1:",x1)
-            print("matches_null:",matches_null)
-            print("mismatches_null:",mismatches_null)
-
+    """
+    #### THIS ALSO WORKS WITH A BAYESIAN PRIOR LIKE SO
     # risk limiting prior (0's, .5 at matches_null, then zeros, then uniform)
     if matches_null >= N:
         prior = np.concatenate([np.zeros(matches_null), np.array([1])])
     else:
         prior = np.concatenate([np.zeros(matches_null), np.array([.5]), \
             np.full(N - matches_null, .5 / (N - matches_null))])
+    """
 
     """
     # plot for viewing pleasure
@@ -82,6 +75,7 @@ def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
     # null dist is only affected by one point on prior
     null_dist = binom.pmf(dist_range, n, matches_null / N)
 
+    """
     if matches_null == N:
         # in case of matches > N, alt should just be binom
         alt_dist = binom.pmf(dist_range, n, matches_null / N)
@@ -93,11 +87,19 @@ def generate_comparison_dists(n, Vw, Vl, null_margin=0, \
                 alt_dist[k] += binom.pmf(k, n, x / N) * prior[x]
         # normalize
         alt_dist = alt_dist / sum(alt_dist)
+    """
 
-    if (plot):
+    # for now, rather than using bayesian stuff, just use a preset value
+    #     for the number of matches under the alternative hypothesis
+    matches_alt_prop = .999
+    alt_dist = binom.pmf(dist_range, n, matches_alt_prop)
+
+    if plot:
         # plot for viewing pleasure
         plt.scatter(dist_range, alt_dist, label='alt', marker='o', color='b')
         plt.scatter(dist_range, null_dist, label='null', marker='x', color='r')
+        plt.legend()
+        plt.title("Comparison Stratum Distributions over Matches")
         plt.show()
 
     return {
@@ -137,10 +139,12 @@ def generate_polling_dists(n, Vw, Vl, null_margin=0, plot=False):
     alt_dist = binom.pmf(dist_range, n, Vw / N)
     null_dist = binom.pmf(dist_range, n, x / N)
 
-    if (plot):
+    if plot:
         # plot for viewing pleasure
         plt.scatter(dist_range, alt_dist, label='alt', marker='o', color='b')
         plt.scatter(dist_range, null_dist, label='null', marker='x', color='r')
+        plt.legend()
+        plt.title("Polling Stratum Distributions over Winner Votes")
         plt.show()
 
     return {
@@ -417,12 +421,12 @@ def maximize_joint_pvalue(k_c, k_p, N_w1, N_l1, N_w2, N_l2, n1, n2, \
         null_joint = dists['null_joint']
         """
         # generate comparison dists
-        comparison_dists = generate_comparison_dists(n1, N_w1, N_l1, null_margin1, print_data=True)
+        comparison_dists = generate_comparison_dists(n1, N_w1, N_l1, null_margin1, print_data=True, plot=False)
         alt_c = comparison_dists['alt_dist']
         null_c = comparison_dists['null_dist']
 
         # generate polling dists
-        polling_dists = generate_polling_dists(n2, N_w2, N_l2, -1 * null_margin1)
+        polling_dists = generate_polling_dists(n2, N_w2, N_l2, -1 * null_margin1, plot=False)
         alt_p = polling_dists['alt_dist']
         null_p = polling_dists['null_dist']
 
