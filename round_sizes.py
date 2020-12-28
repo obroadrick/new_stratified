@@ -419,4 +419,71 @@ def find_sample_size_for_stopping_prob_efficiently_r2bravo(stopping_probability,
                     }
 
 
+def find_sample_size_for_stopping_prob_efficiently_r2bravo_linear(stopping_probability, N_w1, N_l1, N_w2, N_l2, n1, alpha, underlying=None, right=None, combine_func=None, stouffers=False):
+    """
+    This function will also compute minimum round size for the 
+    passed stopping probability, but it will do so much more 
+    efficiently. At each point in the search only one pvalue 
+    will be computed. Should have done it this way to begin with.
+    """
 
+    N_1 = N_w1 + N_l1
+    N_2 = N_w2 + N_l2
+    margin = N_w1 + N_w2 - N_l1 - N_l2
+
+    feasible_lambda_range=calculate_lambda_range(N_w1, N_l1, N_1, N_w2, N_l2, N_2)
+
+    n2 = 1
+     
+    while(1):
+
+        # compute the 1 - stopping_probability quantile of the alt dist
+        # kmax where pr[k >= kmax | alt] = stopping_probability
+        # floor because we need to ensure at least a stopping_probability prob of stopping
+        kmax = math.floor(binom.ppf(1 - stopping_probability, n2, N_w2 / N_2))
+
+        # compute pvalue for this kmax
+        cvr_pvalue = lambda alloc: ballot_comparison_pvalue(n=n1, gamma=1.03905, \
+                                       o1=0, u1=0, o2=0, u2=0,
+                                   reported_margin=margin, N=N_1,
+                                   null_lambda=alloc)
+
+        mod = create_modulus(n1, n2, kmax, n2 - kmax, N_1, margin, 1.03905)
+
+        nocvr_pvalue = lambda alloc: \
+            r2bravo_pvalue_direct_count(winner_votes=kmax, n=n2, popsize=N_2, alpha=alpha, \
+                                Vw=N_w2, Vl=N_l2, \
+                                null_margin=(N_w2-N_l2) - alloc*margin)
+
+        if stouffers is False:
+            combination_results = maximize_fisher_combined_pvalue(N_w1, N_l1, \
+                                   N_1, N_w2, N_l2, N_2, \
+                                   pvalue_funs=[cvr_pvalue, nocvr_pvalue], \
+                                   modulus=mod, alpha=alpha, \
+                                   feasible_lambda_range=feasible_lambda_range, combine_func=combine_func)
+        else:
+            combination_results = maximize_stouffers_combined_pvalue(N_w1, N_l1, \
+                                   N_1, N_w2, N_l2, N_2, \
+                                   pvalue_funs=[cvr_pvalue, nocvr_pvalue], \
+                                   alpha=alpha, \
+                                   stouffers=combine_func)
+
+        pvalue = combination_results['max_pvalue']
+        pvalue_comparison = combination_results['pvalue1']
+        #print(pvalue_comparison)
+        pvalue_polling = combination_results['pvalue2']
+        alloc_lambda = combination_results['allocation lambda']
+
+        
+        # update binary search bounds
+        if (pvalue < alpha):
+            return {
+                "round_size":n2,
+                "combined_pvalue":pvalue,
+                "comparison_pvalue":pvalue_comparison,
+                "polling_pvalue":pvalue_polling,
+                "alloc_lambda":alloc_lambda
+            }
+
+        # update round size
+        n2 = n2 + 1

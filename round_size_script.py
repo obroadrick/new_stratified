@@ -8,12 +8,13 @@ from new_method_na import maximize_joint_pvalue_na, find_minimum_round_size_na
 import time
 from scipy.stats import binom
 from round_sizes import find_sample_size_for_stopping_prob_efficiently, \
-                find_sample_size_for_stopping_prob_efficiently_r2bravo
+                find_sample_size_for_stopping_prob_efficiently_r2bravo, \
+                find_sample_size_for_stopping_prob_efficiently_r2bravo_linear
 import numpy as np
 import json
 
 # store data in json
-data_file_name = "round_sizes.json"
+data_file_name = "round_sizes_linear.json"
 data = {}
 data['audits'] = []
 
@@ -56,8 +57,8 @@ for fractional_margin in np.linspace(.02, .2, 19):
     print(results['pvalue'], "pvalue for kmax", results['kmax'])
 
     # SUITE with R2 Bravo
-    suite_r2bravo = find_sample_size_for_stopping_prob_efficiently_r2bravo(stop_prob, \
-            N_w1, N_l1, N_w2, N_l2, n1, alpha, right = 15000)
+    suite_r2bravo = find_sample_size_for_stopping_prob_efficiently_r2bravo_linear(stop_prob, \
+            N_w1, N_l1, N_w2, N_l2, n1, alpha)
     print("\nSUITE with R2 Bravo")
     print(suite_r2bravo['round_size'], "minimum round size")
     print(suite_r2bravo['combined_pvalue'], "pvalue for kmax")

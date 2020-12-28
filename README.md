@@ -44,3 +44,10 @@ for a stratified audit with two strata: ballot polling, ballot level comparison.
 I include both the round sizes achieved by this new method and those
 of SUITE with R2 Bravo.
 ![round sizes](imgs/round_sizes.png)
+
+Here is that same data but instead, I've plotted the new method
+round sizes as a proportion of the SUITE R2 Bravo round sizes.
+This shows the lower round sizes for the new method,
+and it shows the trend that for tighter margins, the gains in efficiency
+are larger.
+![round sizes props](imgs/round_sizes_props.png)
