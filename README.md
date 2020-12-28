@@ -49,5 +49,9 @@ Here is that same data but instead, I've plotted the new method
 round sizes as a proportion of the SUITE R2 Bravo round sizes.
 This shows the lower round sizes for the new method,
 and it shows the trend that for tighter margins, the gains in efficiency
-are larger.
+are larger. It is not a very smooth like you might expect,
+and for now I'll just attribute this to the fact that the SUITE
+round sizes are found by binary search and thus may actually appear within
+some range rather than at a unique point due to the jagged stopping
+probability vs. round size relationship.
 ![round sizes props](imgs/round_sizes_props.png)
